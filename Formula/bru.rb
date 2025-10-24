@@ -13,6 +13,19 @@ class Bru < Formula
   end
 
   test do
-    assert_match "bru #{version}", shell_output("#{bin}/bru --version")
+    # Test actual functionality, not just --version (Homebrew best practice)
+
+    # Test 1: Verify bru can search formulae via Homebrew API
+    output = shell_output("#{bin}/bru search wget")
+    assert_match "wget", output
+
+    # Test 2: Verify bru can fetch and parse formula metadata
+    info_output = shell_output("#{bin}/bru info wget")
+    assert_match "wget", info_output
+    assert_match(/Internet file retriever|URL retriever|network downloader/i, info_output)
+
+    # Test 3: Verify bru can resolve dependencies
+    deps_output = shell_output("#{bin}/bru deps wget")
+    assert_match(/openssl|libidn/i, deps_output)
   end
 end

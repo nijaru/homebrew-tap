@@ -56,5 +56,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add Formula/bru.rb
-          git commit -m "chore: update formula to v${VERSION}"
-          git push
+
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit - formula already at v${VERSION}"
+          else
+            git commit -m "chore: update formula to v${VERSION}"
+            git push
+            echo "✓ Formula updated to v${VERSION}"
+          fi

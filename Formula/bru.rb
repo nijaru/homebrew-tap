@@ -1,15 +1,31 @@
 class Bru < Formula
   desc "Fast, parallel package manager compatible with Homebrew formulae"
   homepage "https://github.com/nijaru/kombrucha"
-  url "https://github.com/nijaru/kombrucha/archive/refs/tags/v0.1.13.tar.gz"
-  sha256 "76ffa0ef5f72efd427b830cebc3ae750644408fff3b3cd9ac2d43cf679ef20b9"
+  version "0.1.13"
   license "MIT OR Apache-2.0"
   head "https://github.com/nijaru/kombrucha.git", branch: "main"
 
-  depends_on "rust" => :build
+  on_macos do
+    on_arm do
+      url "https://github.com/nijaru/kombrucha/releases/download/v0.1.13/bru-aarch64-apple-darwin.tar.gz"
+      sha256 "48e35b92638d323bb8dd505d800663c670500f860d144cae3ec9b0bdd69c3782"
+    end
+
+    on_intel do
+      url "https://github.com/nijaru/kombrucha/releases/download/v0.1.13/bru-x86_64-apple-darwin.tar.gz"
+      sha256 "c6b6b29d91fb3e0691b2769f89d8b0c289dbd80f3af3dd440261725d92b99e66"
+    end
+  end
+
+  on_linux do
+    on_intel do
+      url "https://github.com/nijaru/kombrucha/releases/download/v0.1.13/bru-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "6f59d21c2308c228b6d768697e4fc9bd15e914610bde4c0e4b424d6d7bac63c3"
+    end
+  end
 
   def install
-    system "cargo", "install", *std_cargo_args
+    bin.install "bru"
   end
 
   test do

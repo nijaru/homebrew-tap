@@ -1,8 +1,8 @@
 class Bru < Formula
   desc "Fast, parallel package manager compatible with Homebrew formulae"
   homepage "https://github.com/nijaru/kombrucha"
-  url "https://github.com/nijaru/kombrucha/archive/refs/tags/v0.1.12.tar.gz"
-  sha256 "254f267abd5d141b434a22812b58da8b99d7de349fd7ab64bc01301746193631"
+  url "https://github.com/nijaru/kombrucha/archive/refs/tags/v0.1.13.tar.gz"
+  sha256 "6a7467d64e3841064a43afd3325c36e6c228b9d144147840bf108fc8bdbcce65"
   license "MIT OR Apache-2.0"
   head "https://github.com/nijaru/kombrucha.git", branch: "main"
 

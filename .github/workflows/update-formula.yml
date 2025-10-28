@@ -13,6 +13,8 @@ on:
 jobs:
   update-formula:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout tap repository
         uses: actions/checkout@v4

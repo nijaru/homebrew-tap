@@ -8,12 +8,12 @@ class Bru < Formula
   on_macos do
     on_arm do
       url "https://github.com/nijaru/kombrucha/releases/download/v0.1.14/bru-aarch64-apple-darwin.tar.gz"
-      sha256 "63a50d6bd58bb5a15eb937cd577a4600662adef3006c9d53e4f3068ba19e224c"
+      sha256 "926adaa8a3f255ebe040e733f9aba90fe0b98f287138daa6744207a6d5966b0d"
     end
 
     on_intel do
       url "https://github.com/nijaru/kombrucha/releases/download/v0.1.14/bru-x86_64-apple-darwin.tar.gz"
-      sha256 "63a50d6bd58bb5a15eb937cd577a4600662adef3006c9d53e4f3068ba19e224c"
+      sha256 "926adaa8a3f255ebe040e733f9aba90fe0b98f287138daa6744207a6d5966b0d"
     end
   end
 

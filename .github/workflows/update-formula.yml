@@ -55,16 +55,27 @@ jobs:
           ARM64_SHA256="${{ steps.binaries.outputs.arm64_sha256 }}"
           X86_64_SHA256="${{ steps.binaries.outputs.x86_64_sha256 }}"
 
-          # Update version
-          sed -i "s/version \"[0-9.]*\"/version \"${VERSION}\"/" Formula/bru.rb
-
-          # Update ARM64 URL and SHA256
-          sed -i "0,/releases\/download\/v[0-9.]*\/bru-aarch64-apple-darwin.tar.gz/s||releases/download/v${VERSION}/bru-aarch64-apple-darwin.tar.gz|" Formula/bru.rb
-          sed -i "0,/sha256 \".*\"/s||sha256 \"${ARM64_SHA256}\"|" Formula/bru.rb
-
-          # Update x86_64 URL and SHA256
-          sed -i "0,/releases\/download\/v[0-9.]*\/bru-x86_64-apple-darwin.tar.gz/s||releases/download/v${VERSION}/bru-x86_64-apple-darwin.tar.gz|" Formula/bru.rb
-          sed -i "0,/sha256 \".*\"/s||sha256 \"${X86_64_SHA256}\"|" Formula/bru.rb
+          # Update using awk for precise control over which sha256 to update
+          awk -v version="${VERSION}" -v arm64_sha="${ARM64_SHA256}" -v x86_64_sha="${X86_64_SHA256}" '
+          /version "/ { sub(/"[0-9.]+"/, "\"" version "\""); print; next }
+          /on_arm/ { in_arm=1 }
+          /on_intel/ { in_arm=0; in_intel=1 }
+          /url.*bru-aarch64-apple-darwin/ { sub(/v[0-9.]+/, "v" version); print; next }
+          /url.*bru-x86_64-apple-darwin/ { sub(/v[0-9.]+/, "v" version); print; next }
+          /sha256/ {
+            if (in_arm) {
+              print "      sha256 \"" arm64_sha "\""
+              in_arm=0
+              next
+            }
+            if (in_intel) {
+              print "      sha256 \"" x86_64_sha "\""
+              in_intel=0
+              next
+            }
+          }
+          { print }
+          ' Formula/bru.rb > Formula/bru.rb.tmp && mv Formula/bru.rb.tmp Formula/bru.rb
 
           echo "Formula updated to v${VERSION}"
           cat Formula/bru.rb

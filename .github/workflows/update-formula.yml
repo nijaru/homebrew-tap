@@ -30,24 +30,41 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Updating to version: ${VERSION}"
 
-      - name: Download tarball and calculate SHA256
-        id: tarball
+      - name: Download binaries and calculate SHA256
+        id: binaries
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          URL="https://github.com/nijaru/kombrucha/archive/refs/tags/v${VERSION}.tar.gz"
-          echo "Downloading ${URL}"
-          SHA256=$(curl -sL "${URL}" | shasum -a 256 | cut -d' ' -f1)
-          echo "sha256=${SHA256}" >> $GITHUB_OUTPUT
-          echo "SHA256: ${SHA256}"
+
+          # Download ARM64 macOS binary
+          ARM64_URL="https://github.com/nijaru/kombrucha/releases/download/v${VERSION}/bru-aarch64-apple-darwin.tar.gz"
+          echo "Downloading ${ARM64_URL}"
+          ARM64_SHA256=$(curl -sL "${ARM64_URL}" | shasum -a 256 | cut -d' ' -f1)
+          echo "arm64_sha256=${ARM64_SHA256}" >> $GITHUB_OUTPUT
+          echo "ARM64 SHA256: ${ARM64_SHA256}"
+
+          # Download x86_64 macOS binary
+          X86_64_URL="https://github.com/nijaru/kombrucha/releases/download/v${VERSION}/bru-x86_64-apple-darwin.tar.gz"
+          echo "Downloading ${X86_64_URL}"
+          X86_64_SHA256=$(curl -sL "${X86_64_URL}" | shasum -a 256 | cut -d' ' -f1)
+          echo "x86_64_sha256=${X86_64_SHA256}" >> $GITHUB_OUTPUT
+          echo "x86_64 SHA256: ${X86_64_SHA256}"
 
       - name: Update formula
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          SHA256="${{ steps.tarball.outputs.sha256 }}"
+          ARM64_SHA256="${{ steps.binaries.outputs.arm64_sha256 }}"
+          X86_64_SHA256="${{ steps.binaries.outputs.x86_64_sha256 }}"
 
-          # Update version and SHA256 in formula
-          sed -i "s|archive/refs/tags/v[0-9.]*\.tar\.gz|archive/refs/tags/v${VERSION}.tar.gz|" Formula/bru.rb
-          sed -i "s|sha256 \".*\"|sha256 \"${SHA256}\"|" Formula/bru.rb
+          # Update version
+          sed -i "s/version \"[0-9.]*\"/version \"${VERSION}\"/" Formula/bru.rb
+
+          # Update ARM64 URL and SHA256
+          sed -i "0,/releases\/download\/v[0-9.]*\/bru-aarch64-apple-darwin.tar.gz/s||releases/download/v${VERSION}/bru-aarch64-apple-darwin.tar.gz|" Formula/bru.rb
+          sed -i "0,/sha256 \".*\"/s||sha256 \"${ARM64_SHA256}\"|" Formula/bru.rb
+
+          # Update x86_64 URL and SHA256
+          sed -i "0,/releases\/download\/v[0-9.]*\/bru-x86_64-apple-darwin.tar.gz/s||releases/download/v${VERSION}/bru-x86_64-apple-darwin.tar.gz|" Formula/bru.rb
+          sed -i "0,/sha256 \".*\"/s||sha256 \"${X86_64_SHA256}\"|" Formula/bru.rb
 
           echo "Formula updated to v${VERSION}"
           cat Formula/bru.rb

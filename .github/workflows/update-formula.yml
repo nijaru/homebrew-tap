@@ -38,9 +38,9 @@ jobs:
           # Function to download with retry (waits for binaries to be uploaded)
           download_with_retry() {
             local url=$1
-            local max_attempts=6
+            local max_attempts=10
             local attempt=1
-            local wait_time=20
+            local wait_time=30
 
             while [ $attempt -le $max_attempts ]; do
               echo "Attempt $attempt/$max_attempts: Downloading $url"
@@ -55,7 +55,6 @@ jobs:
               echo "Download failed or file too small, waiting ${wait_time}s before retry..."
               sleep $wait_time
               attempt=$((attempt + 1))
-              wait_time=$((wait_time + 20))  # Increase wait time each attempt
             done
 
             echo "ERROR: Failed to download after $max_attempts attempts"

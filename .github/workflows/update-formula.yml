@@ -38,7 +38,7 @@ jobs:
           # Function to download with retry (waits for binaries to be uploaded)
           download_with_retry() {
             local url=$1
-            local max_attempts=10
+            local max_attempts=15
             local attempt=1
             local wait_time=30
 

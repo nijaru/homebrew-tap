@@ -35,17 +35,52 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
 
-          # Download ARM64 macOS binary
+          # Function to download with retry (waits for binaries to be uploaded)
+          download_with_retry() {
+            local url=$1
+            local max_attempts=10
+            local attempt=1
+            local wait_time=30
+
+            while [ $attempt -le $max_attempts ]; do
+              echo "Attempt $attempt/$max_attempts: Downloading $url"
+
+              # Try to download and check if file is valid (>100 bytes)
+              if curl -sL "$url" -o /tmp/binary.tar.gz && [ $(wc -c < /tmp/binary.tar.gz) -gt 100 ]; then
+                sha256sum /tmp/binary.tar.gz | cut -d' ' -f1
+                rm /tmp/binary.tar.gz
+                return 0
+              fi
+
+              echo "Download failed or file too small, waiting ${wait_time}s before retry..."
+              sleep $wait_time
+              attempt=$((attempt + 1))
+              wait_time=$((wait_time + 30))  # Increase wait time each attempt
+            done
+
+            echo "ERROR: Failed to download after $max_attempts attempts"
+            return 1
+          }
+
+          # Download ARM64 macOS binary with retry
           ARM64_URL="https://github.com/nijaru/kombrucha/releases/download/v${VERSION}/bru-aarch64-apple-darwin.tar.gz"
-          echo "Downloading ${ARM64_URL}"
-          ARM64_SHA256=$(curl -sL "${ARM64_URL}" | shasum -a 256 | cut -d' ' -f1)
+          echo "Downloading ARM64 binary (with retry logic)..."
+          ARM64_SHA256=$(download_with_retry "${ARM64_URL}")
+          if [ $? -ne 0 ]; then
+            echo "ERROR: Failed to download ARM64 binary"
+            exit 1
+          fi
           echo "arm64_sha256=${ARM64_SHA256}" >> $GITHUB_OUTPUT
           echo "ARM64 SHA256: ${ARM64_SHA256}"
 
-          # Download x86_64 macOS binary
+          # Download x86_64 macOS binary with retry
           X86_64_URL="https://github.com/nijaru/kombrucha/releases/download/v${VERSION}/bru-x86_64-apple-darwin.tar.gz"
-          echo "Downloading ${X86_64_URL}"
-          X86_64_SHA256=$(curl -sL "${X86_64_URL}" | shasum -a 256 | cut -d' ' -f1)
+          echo "Downloading x86_64 binary (with retry logic)..."
+          X86_64_SHA256=$(download_with_retry "${X86_64_URL}")
+          if [ $? -ne 0 ]; then
+            echo "ERROR: Failed to download x86_64 binary"
+            exit 1
+          fi
           echo "x86_64_sha256=${X86_64_SHA256}" >> $GITHUB_OUTPUT
           echo "x86_64 SHA256: ${X86_64_SHA256}"
 

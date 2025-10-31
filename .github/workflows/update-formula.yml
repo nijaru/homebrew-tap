@@ -43,7 +43,7 @@ jobs:
             local wait_time=30
 
             while [ $attempt -le $max_attempts ]; do
-              echo "Attempt $attempt/$max_attempts: Downloading $url"
+              echo "Attempt $attempt/$max_attempts: Downloading $url" >&2
 
               # Try to download and check if file is valid (>100 bytes)
               if curl -sL "$url" -o /tmp/binary.tar.gz && [ $(wc -c < /tmp/binary.tar.gz) -gt 100 ]; then
@@ -52,36 +52,36 @@ jobs:
                 return 0
               fi
 
-              echo "Download failed or file too small, waiting ${wait_time}s before retry..."
+              echo "Download failed or file too small, waiting ${wait_time}s before retry..." >&2
               sleep $wait_time
               attempt=$((attempt + 1))
             done
 
-            echo "ERROR: Failed to download after $max_attempts attempts"
+            echo "ERROR: Failed to download after $max_attempts attempts" >&2
             return 1
           }
 
           # Download ARM64 macOS binary with retry
           ARM64_URL="https://github.com/nijaru/kombrucha/releases/download/v${VERSION}/bru-aarch64-apple-darwin.tar.gz"
-          echo "Downloading ARM64 binary (with retry logic)..."
+          echo "Downloading ARM64 binary (with retry logic)..." >&2
           ARM64_SHA256=$(download_with_retry "${ARM64_URL}")
           if [ $? -ne 0 ]; then
-            echo "ERROR: Failed to download ARM64 binary"
+            echo "ERROR: Failed to download ARM64 binary" >&2
             exit 1
           fi
           echo "arm64_sha256=${ARM64_SHA256}" >> $GITHUB_OUTPUT
-          echo "ARM64 SHA256: ${ARM64_SHA256}"
+          echo "ARM64 SHA256: ${ARM64_SHA256}" >&2
 
           # Download x86_64 macOS binary with retry
           X86_64_URL="https://github.com/nijaru/kombrucha/releases/download/v${VERSION}/bru-x86_64-apple-darwin.tar.gz"
-          echo "Downloading x86_64 binary (with retry logic)..."
+          echo "Downloading x86_64 binary (with retry logic)..." >&2
           X86_64_SHA256=$(download_with_retry "${X86_64_URL}")
           if [ $? -ne 0 ]; then
-            echo "ERROR: Failed to download x86_64 binary"
+            echo "ERROR: Failed to download x86_64 binary" >&2
             exit 1
           fi
           echo "x86_64_sha256=${X86_64_SHA256}" >> $GITHUB_OUTPUT
-          echo "x86_64 SHA256: ${X86_64_SHA256}"
+          echo "x86_64 SHA256: ${X86_64_SHA256}" >&2
 
       - name: Update formula
         run: |

@@ -1,19 +1,19 @@
 class Bru < Formula
   desc "Fast, parallel package manager compatible with Homebrew formulae"
   homepage "https://github.com/nijaru/kombrucha"
-  version "0.1.24"
+  version "0.1.25"
   license "MIT OR Apache-2.0"
   head "https://github.com/nijaru/kombrucha.git", branch: "main"
 
   on_macos do
     on_arm do
-      url "https://github.com/nijaru/kombrucha/releases/download/v0.1.24/bru-aarch64-apple-darwin.tar.gz"
-      sha256 "8b4502782ff0fd93b7cac9f92107e7475a4018e23a71e8db3f08233c54714f1a"
+      url "https://github.com/nijaru/kombrucha/releases/download/v0.1.25/bru-aarch64-apple-darwin.tar.gz"
+      sha256 "2c3a11c5c7f525b5758d1470e4e0a693940a140fa4f999c7968990b6e1b15944"
     end
 
     on_intel do
-      url "https://github.com/nijaru/kombrucha/releases/download/v0.1.24/bru-x86_64-apple-darwin.tar.gz"
-      sha256 "f83e02df5d48d149c779ac761b2a59b7e1a8e81b246ec9a3717b1f4c41fab215"
+      url "https://github.com/nijaru/kombrucha/releases/download/v0.1.25/bru-x86_64-apple-darwin.tar.gz"
+      sha256 "90d573cf42ec36ea420d752fc3c234370c8b3959fc01ef47335723cc92a527e0"
     end
   end
 

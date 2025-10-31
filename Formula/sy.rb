@@ -1,8 +1,8 @@
 class Sy < Formula
   desc "Modern rsync alternative - Fast, parallel file synchronization"
   homepage "https://github.com/nijaru/sy"
-  url "https://github.com/nijaru/sy/archive/refs/tags/v0.0.54.tar.gz"
-  sha256 "0e5d5eba75de161b485fe694128bca26dc61eded11906228cd179d2baef65c95"
+  url "https://github.com/nijaru/sy/archive/refs/tags/v0.0.55.tar.gz"
+  sha256 "42c9a266b7679a5c4606448c039b49a8c613e05e96b98f289877111b2f437d4f"
   license "MIT"
   head "https://github.com/nijaru/sy.git", branch: "main"
 

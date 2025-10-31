@@ -1,18 +1,34 @@
 class Sy < Formula
   desc "Modern rsync alternative - Fast, parallel file synchronization"
   homepage "https://github.com/nijaru/sy"
-  url "https://github.com/nijaru/sy/archive/refs/tags/v0.0.55.tar.gz"
-  sha256 "42c9a266b7679a5c4606448c039b49a8c613e05e96b98f289877111b2f437d4f"
+  version "0.0.55"
   license "MIT"
   head "https://github.com/nijaru/sy.git", branch: "main"
 
-  depends_on "rust" => :build
+  on_macos do
+    on_arm do
+      url "https://github.com/nijaru/sy/releases/download/v0.0.55/sy-aarch64-apple-darwin.tar.gz"
+      sha256 "dc85709c1d202b735048f55ab8ea19bd3cda778db542a161577881b574bca0a9"
+    end
+
+    on_intel do
+      # No prebuilt binary for Intel yet - build from source
+      url "https://github.com/nijaru/sy/archive/refs/tags/v0.0.55.tar.gz"
+      sha256 "42c9a266b7679a5c4606448c039b49a8c613e05e96b98f289877111b2f437d4f"
+      depends_on "rust" => :build
+    end
+  end
 
   def install
-    system "cargo", "install", *std_cargo_args
-
-    # Install sy-remote helper binary
-    bin.install "target/release/sy-remote" if File.exist?("target/release/sy-remote")
+    if File.exist?("sy") && File.exist?("sy-remote")
+      # Prebuilt binaries (Apple Silicon)
+      bin.install "sy"
+      bin.install "sy-remote"
+    else
+      # Build from source (Intel Mac)
+      system "cargo", "install", *std_cargo_args
+      bin.install "target/release/sy-remote" if File.exist?("target/release/sy-remote")
+    end
   end
 
   test do

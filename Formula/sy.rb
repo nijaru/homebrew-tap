@@ -8,7 +8,7 @@ class Sy < Formula
   on_macos do
     on_arm do
       url "https://github.com/nijaru/sy/releases/download/v0.0.59/sy-aarch64-apple-darwin.tar.gz"
-      sha256 "51bed6d8c3e2cbc9500cded08b54e662521cb5b3f8eae4e8b68d31edcc2b95e2"
+      sha256 "074ac53c969d5a03a1f8536c61b5aff53295ff465f29a8d57f0e1741d262950b"
     end
 
     on_intel do

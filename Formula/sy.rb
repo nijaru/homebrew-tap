@@ -1,20 +1,20 @@
 class Sy < Formula
   desc "Modern rsync alternative - Fast, parallel file synchronization"
   homepage "https://github.com/nijaru/sy"
-  version "0.1.0"
+  version "0.1.1"
   license "MIT"
   head "https://github.com/nijaru/sy.git", branch: "main"
 
   on_macos do
     on_arm do
-      url "https://github.com/nijaru/sy/releases/download/v0.1.0/sy-aarch64-apple-darwin.tar.gz"
-      sha256 "87be179e0d44fc586342353f817c06cd4c6f8d9009bbec4a4e4d86ce221d407c"
+      url "https://github.com/nijaru/sy/releases/download/v0.1.1/sy-aarch64-apple-darwin.tar.gz"
+      sha256 "c4397d3d418badf541a638efb0e5d9015a0ad61e43761b14124bf7cf9c401f19"
     end
 
     on_intel do
       # No prebuilt binary for Intel yet - build from source
-      url "https://github.com/nijaru/sy/archive/refs/tags/v0.1.0.tar.gz"
-      sha256 "4f28f510eed1a0a1caa1ad1f63acbd6d31fa2cea77e24ad2349b21496cc3bf9d"
+      url "https://github.com/nijaru/sy/archive/refs/tags/v0.1.1.tar.gz"
+      sha256 "a01a861dbfab5b11929d9a41b0a02e07a76e653844a6e069e0020ea719af1808"
       depends_on "rust" => :build
     end
   end

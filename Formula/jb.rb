@@ -8,12 +8,12 @@ class Jb < Formula
   on_macos do
     on_arm do
       url "https://github.com/nijaru/jb/releases/download/v0.0.8/jb-aarch64-apple-darwin.tar.gz"
-      sha256 "9ba5041bafd65b3011a57b87e74781d2d85b193fe7b3e28acd6611168e33c4ee"
+      sha256 "4199a0aa7c820010b2a687a53bb819c09fa819cb8fd7601cac21e8ffed34f301"
     end
 
     on_intel do
       url "https://github.com/nijaru/jb/archive/refs/tags/v0.0.8.tar.gz"
-      sha256 "0be32c98843372e42d6ab4f6850c99378ffb91f72876ed7fda202f87a7d5af89"
+      sha256 "9a432506a2de0808fddfe99361db935696948b7156634125e8a547e068636a7c"
       depends_on "rust" => :build
     end
   end
@@ -21,12 +21,12 @@ class Jb < Formula
   on_linux do
     on_arm do
       url "https://github.com/nijaru/jb/releases/download/v0.0.8/jb-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "94eb18969a04216e325991e7b16af272f1745cbe9b1f615267cfb2bd3fb01c93"
+      sha256 "3c212cabe9c6b3157c14e7dc19c82a888ebf640c06c999bbdd3d6752a575262d"
     end
 
     on_intel do
       url "https://github.com/nijaru/jb/releases/download/v0.0.8/jb-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "8130b80a54b60d95170a1998ce194aa4cf756ba771ab1ab36dfb817eed7b1492"
+      sha256 "dc059b004c82223765735b02711cd94826d646908ce7ddbe6a9fe1173b3daafa"
     end
   end
 

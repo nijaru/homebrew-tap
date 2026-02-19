@@ -8,7 +8,7 @@ class Jb < Formula
   on_macos do
     on_arm do
       url "https://github.com/nijaru/jb/releases/download/v0.0.13/jb-aarch64-apple-darwin.tar.gz"
-      sha256 "6774ace92521669703a2711d3353c23dd3c016a82e4897154eb30dc59aef4d9a"
+      sha256 "ac317eee17e4bc7c16e8c3217b3547916ea432a3ed695f3d9d6286bb71b79d41"
     end
 
     on_intel do
@@ -21,12 +21,12 @@ class Jb < Formula
   on_linux do
     on_arm do
       url "https://github.com/nijaru/jb/releases/download/v0.0.13/jb-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "30da0550bf59f59262460399bfb587d09047e05ec8771090b1bbcf6bfba57de9"
+      sha256 "b742d8361690bb652855d30f4ad0d9e841a969b9ca5f932a872298edad5c6315"
     end
 
     on_intel do
       url "https://github.com/nijaru/jb/releases/download/v0.0.13/jb-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "3999ad2d52ae60864c9e6de216499b079fe89d94b7baf4bb74148688e7be3599"
+      sha256 "84f6746c493754e629ada0d245ed4e4776710af408d97cfbfc03dbb980197b11"
     end
   end
 

@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to update to (e.g., 0.1.12)'
+        description: 'Version (e.g. 0.0.14)'
         required: true
         type: string
 
@@ -16,8 +16,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout tap repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set version
         id: version
@@ -28,104 +27,71 @@ jobs:
             VERSION="${{ inputs.version }}"
           fi
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "Updating to version: ${VERSION}"
 
-      - name: Download binaries and calculate SHA256
-        id: binaries
+      - name: Download checksums
+        id: shas
         run: |
           VERSION="${{ steps.version.outputs.version }}"
+          BASE="https://github.com/nijaru/jb/releases/download/v${VERSION}"
 
-          # Function to download with retry (waits for binaries to be uploaded)
-          download_with_retry() {
+          download_sha() {
             local url=$1
-            local max_attempts=15
-            local attempt=1
-            local wait_time=30
-
-            while [ $attempt -le $max_attempts ]; do
-              echo "Attempt $attempt/$max_attempts: Downloading $url" >&2
-
-              # Try to download and check if file is valid (>100 bytes)
-              if curl -sL "$url" -o /tmp/binary.tar.gz && [ $(wc -c < /tmp/binary.tar.gz) -gt 100 ]; then
-                sha256sum /tmp/binary.tar.gz | cut -d' ' -f1
-                rm /tmp/binary.tar.gz
-                return 0
-              fi
-
-              echo "Download failed or file too small, waiting ${wait_time}s before retry..." >&2
-              sleep $wait_time
-              attempt=$((attempt + 1))
+            local attempts=10
+            for i in $(seq 1 $attempts); do
+              result=$(curl -sfL "$url" | awk '{print $1}')
+              if [ -n "$result" ]; then echo "$result"; return 0; fi
+              echo "Waiting for $url (attempt $i/$attempts)..." >&2
+              sleep 30
             done
-
-            echo "ERROR: Failed to download after $max_attempts attempts" >&2
-            return 1
+            echo "ERROR: failed to fetch $url" >&2; return 1
           }
 
-          # Download ARM64 macOS binary with retry
-          ARM64_URL="https://github.com/nijaru/kombrucha/releases/download/v${VERSION}/bru-aarch64-apple-darwin.tar.gz"
-          echo "Downloading ARM64 binary (with retry logic)..." >&2
-          ARM64_SHA256=$(download_with_retry "${ARM64_URL}")
-          if [ $? -ne 0 ]; then
-            echo "ERROR: Failed to download ARM64 binary" >&2
-            exit 1
-          fi
-          echo "arm64_sha256=${ARM64_SHA256}" >> $GITHUB_OUTPUT
-          echo "ARM64 SHA256: ${ARM64_SHA256}" >&2
+          MAC_ARM64=$(download_sha "${BASE}/jb-aarch64-apple-darwin.tar.gz.sha256")
+          LINUX_ARM64=$(download_sha "${BASE}/jb-aarch64-unknown-linux-gnu.tar.gz.sha256")
+          LINUX_X64=$(download_sha "${BASE}/jb-x86_64-unknown-linux-gnu.tar.gz.sha256")
+          SOURCE=$(curl -sfL "https://github.com/nijaru/jb/archive/refs/tags/v${VERSION}.tar.gz" | sha256sum | awk '{print $1}')
 
-          # Download x86_64 macOS binary with retry
-          X86_64_URL="https://github.com/nijaru/kombrucha/releases/download/v${VERSION}/bru-x86_64-apple-darwin.tar.gz"
-          echo "Downloading x86_64 binary (with retry logic)..." >&2
-          X86_64_SHA256=$(download_with_retry "${X86_64_URL}")
-          if [ $? -ne 0 ]; then
-            echo "ERROR: Failed to download x86_64 binary" >&2
-            exit 1
-          fi
-          echo "x86_64_sha256=${X86_64_SHA256}" >> $GITHUB_OUTPUT
-          echo "x86_64 SHA256: ${X86_64_SHA256}" >&2
+          echo "mac_arm64=${MAC_ARM64}" >> $GITHUB_OUTPUT
+          echo "linux_arm64=${LINUX_ARM64}" >> $GITHUB_OUTPUT
+          echo "linux_x64=${LINUX_X64}" >> $GITHUB_OUTPUT
+          echo "source=${SOURCE}" >> $GITHUB_OUTPUT
 
       - name: Update formula
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          ARM64_SHA256="${{ steps.binaries.outputs.arm64_sha256 }}"
-          X86_64_SHA256="${{ steps.binaries.outputs.x86_64_sha256 }}"
+          MAC_ARM64="${{ steps.shas.outputs.mac_arm64 }}"
+          LINUX_ARM64="${{ steps.shas.outputs.linux_arm64 }}"
+          LINUX_X64="${{ steps.shas.outputs.linux_x64 }}"
+          SOURCE="${{ steps.shas.outputs.source }}"
 
-          # Update using awk for precise control over which sha256 to update
-          awk -v version="${VERSION}" -v arm64_sha="${ARM64_SHA256}" -v x86_64_sha="${X86_64_SHA256}" '
-          /version "/ { sub(/"[0-9.]+"/, "\"" version "\""); print; next }
-          /on_arm/ { in_arm=1 }
-          /on_intel/ { in_arm=0; in_intel=1 }
-          /url.*bru-aarch64-apple-darwin/ { sub(/v[0-9.]+/, "v" version); print; next }
-          /url.*bru-x86_64-apple-darwin/ { sub(/v[0-9.]+/, "v" version); print; next }
-          /sha256/ {
-            if (in_arm) {
-              print "      sha256 \"" arm64_sha "\""
-              in_arm=0
-              next
+          awk -v ver="$VERSION" \
+              -v mac_arm64="$MAC_ARM64" \
+              -v linux_arm64="$LINUX_ARM64" \
+              -v linux_x64="$LINUX_X64" \
+              -v source_sha="$SOURCE" '
+            /version "/ { sub(/"[0-9.]+"/, "\"" ver "\""); print; next }
+            /url.*jb-aarch64-apple-darwin/   { last="mac_arm64";  sub(/v[0-9.]+/, "v" ver); print; next }
+            /url.*jb-aarch64-unknown-linux/  { last="linux_arm64"; sub(/v[0-9.]+/, "v" ver); print; next }
+            /url.*jb-x86_64-unknown-linux/   { last="linux_x64";  sub(/v[0-9.]+/, "v" ver); print; next }
+            /url.*archive\/refs\/tags/       { last="source";     sub(/v[0-9.]+\.tar\.gz/, "v" ver ".tar.gz"); print; next }
+            /sha256/ {
+              if      (last == "mac_arm64")   { print "      sha256 \"" mac_arm64 "\"";   last=""; next }
+              else if (last == "linux_arm64") { print "      sha256 \"" linux_arm64 "\""; last=""; next }
+              else if (last == "linux_x64")  { print "      sha256 \"" linux_x64 "\"";   last=""; next }
+              else if (last == "source")     { print "      sha256 \"" source_sha "\"";  last=""; next }
             }
-            if (in_intel) {
-              print "      sha256 \"" x86_64_sha "\""
-              in_intel=0
-              next
-            }
-          }
-          { print }
-          ' Formula/bru.rb > Formula/bru.rb.tmp && mv Formula/bru.rb.tmp Formula/bru.rb
+            { print }
+          ' Formula/jb.rb > Formula/jb.rb.tmp && mv Formula/jb.rb.tmp Formula/jb.rb
 
-          echo "Formula updated to v${VERSION}"
-          cat Formula/bru.rb
-
-      - name: Commit and push changes
+      - name: Commit and push
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Formula/bru.rb
-
-          # Only commit if there are changes
+          git add Formula/jb.rb
           if git diff --staged --quiet; then
-            echo "No changes to commit - formula already at v${VERSION}"
+            echo "Formula already at v${VERSION}"
           else
-            git commit -m "chore: update formula to v${VERSION}"
+            git commit -m "chore: update jb to v${VERSION}"
             git push
-            echo "✓ Formula updated to v${VERSION}"
           fi

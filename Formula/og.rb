@@ -7,11 +7,11 @@ class Og < Formula
   on_macos do
     on_arm do
       url "https://github.com/nijaru/omengrep/releases/download/v0.0.1/og-aarch64-apple-darwin.tar.gz"
-      sha256 "PLACEHOLDER"
+      sha256 "d19099c689b8c96eec9e9142771b4d4b2399372a78dbe2759ed0e472d33c78dd"
     end
 
     on_intel do
-      url "https://github.com/nijaru/omengrep/archive/refs/tags/v0.0.1.tar.gz"
+      url "https://github.com/nisha256 "711cb2130ca676207a39cee1a20e973328cc87f9b11650347c1f8b6abdcaf1b4"e/refs/tags/v0.0.1.tar.gz"
       sha256 "PLACEHOLDER"
       depends_on "rust" => :build
     end

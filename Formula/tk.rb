@@ -11,7 +11,7 @@ class Tk < Formula
   on_macos do
     if Hardware::CPU.intel?
       url "https://github.com/nijaru/tk/releases/download/v0.1.2/tk_darwin_amd64.tar.gz"
-      sha256 "15e59eccbd1f653651a3e57777fd04c1739c143103456ccf05200e40fe807707"
+      sha256 "fdf2f12f46ed23b7b9d80f97a65cf023a0cfdcc87e5369d5d5c5b424ac99d25a"
 
       define_method(:install) do
         bin.install "tk"
@@ -19,7 +19,7 @@ class Tk < Formula
     end
     if Hardware::CPU.arm?
       url "https://github.com/nijaru/tk/releases/download/v0.1.2/tk_darwin_arm64.tar.gz"
-      sha256 "15d0ac5a418738909d8e8738da007d879db62fae535a61936b082e8a5e0ae9f3"
+      sha256 "5c0a9e42715ad1be13e52ace720fc6f1c9f5989c8839f8e1bf5a39a5f20df10a"
 
       define_method(:install) do
         bin.install "tk"
@@ -30,14 +30,14 @@ class Tk < Formula
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
       url "https://github.com/nijaru/tk/releases/download/v0.1.2/tk_linux_amd64.tar.gz"
-      sha256 "2825d5ef69455557665172e028ad454cc4e128b276c85287141eb35a1c6f6397"
+      sha256 "829729f0202f5428e01ce731e0c759aacf57703ab383f7313399c1efb9256100"
       define_method(:install) do
         bin.install "tk"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
       url "https://github.com/nijaru/tk/releases/download/v0.1.2/tk_linux_arm64.tar.gz"
-      sha256 "771ea87909fd1a9e6a486f51a7b2d76ccaba9cd667f3f678a1355616133f7d4a"
+      sha256 "cdf722ae668179c5ac7bbfbe4582a68c89895807dd4f04f78bce3ae4289c8b11"
       define_method(:install) do
         bin.install "tk"
       end

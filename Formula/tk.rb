@@ -5,21 +5,21 @@
 class Tk < Formula
   desc "Minimal task tracker CLI"
   homepage "https://github.com/nijaru/tk"
-  version "0.1.3"
+  version "0.1.4"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/nijaru/tk/releases/download/v0.1.3/tk_darwin_amd64.tar.gz"
-      sha256 "500b68b40b9dc818f86d5936c69fc216a624da09297f5891b142c24aeb81c75f"
+      url "https://github.com/nijaru/tk/releases/download/v0.1.4/tk_darwin_amd64.tar.gz"
+      sha256 "2ed3735e514f4e89d213edaeb6121b99353032fb6fe41f5646c29aab7a2a9b23"
 
       define_method(:install) do
         bin.install "tk"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/nijaru/tk/releases/download/v0.1.3/tk_darwin_arm64.tar.gz"
-      sha256 "5db71f56c221235b48aca71421bf69744eb2107d1a4f9fb117ad0de41886c0fd"
+      url "https://github.com/nijaru/tk/releases/download/v0.1.4/tk_darwin_arm64.tar.gz"
+      sha256 "56c58863dd746879bc3a14710720882457d717037851544670f15d2567c6ff37"
 
       define_method(:install) do
         bin.install "tk"
@@ -29,15 +29,15 @@ class Tk < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/nijaru/tk/releases/download/v0.1.3/tk_linux_amd64.tar.gz"
-      sha256 "a038c3683bbc62819019703cd2c41d9cc55d841f10c0f52e33ca59454bb3a8a5"
+      url "https://github.com/nijaru/tk/releases/download/v0.1.4/tk_linux_amd64.tar.gz"
+      sha256 "f800afd68385e49e2ae36c403c23f24fbd0345397dcc328425e8e07162b67e14"
       define_method(:install) do
         bin.install "tk"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/nijaru/tk/releases/download/v0.1.3/tk_linux_arm64.tar.gz"
-      sha256 "5b029fe47fb21944eb6d1d53f2395058aa9b2790a1080132fcd2d548c6e4b549"
+      url "https://github.com/nijaru/tk/releases/download/v0.1.4/tk_linux_arm64.tar.gz"
+      sha256 "0c924a0381b5be9b4c676399521314700f6303359818da67932649159ae96f2d"
       define_method(:install) do
         bin.install "tk"
       end
